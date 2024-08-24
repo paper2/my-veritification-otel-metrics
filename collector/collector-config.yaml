@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+
+processors:
+  batch:
+    send_batch_max_size: 200
+    send_batch_size: 200
+    timeout: 5s
+
+  resourcedetection:
+    detectors: [env, gcp]
+    timeout: 2s
+    override: false
+
+exporters:
+  googlecloud:
+  googlemanagedprometheus:
+
+# connectors:
+#   spanmetrics:
+#     histogram:
+#       explicit:
+#         buckets: [1ms, 10ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms, 700ms, 800ms, 900ms, 1s]
+#     metrics_flush_interval: 1s
+#   count:
+#     spans:
+#       my.span.count:
+#         description: The number of logs from each environment.
+#         attributes:
+#           - key: env
+#             default_value: unspecified_environment
+
+service:
+  pipelines:
+    metrics:
+      # receivers: [spanmetrics]
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [googlemanagedprometheus]
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      # exporters: [googlecloud, spanmetrics]
+      exporters: [googlecloud]
