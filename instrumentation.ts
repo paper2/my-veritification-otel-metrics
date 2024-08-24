@@ -17,7 +17,13 @@ const sdk = new opentelemetry.NodeSDK({
             //   url: '<your-otlp-endpoint>/v1/metrics', // url is optional and can be omitted - default is http://localhost:4318/v1/metrics
             headers: {}, // an optional object containing custom headers to be sent with each request
         }),
+        // Default is 60000ms (60 seconds). Set to 1 seconds for demonstrative purposes only.
+        // これをとても長い時間にしてforceFlushと組み合わせるとManual Push的なことができそう
+        exportIntervalMillis: 1000,
     }),
     instrumentations: [getNodeAutoInstrumentations()],
 });
 sdk.start();
+
+// nodeのauto instrumentation不要なら以下の設定が使えそう
+// https://opentelemetry.io/docs/languages/js/instrumentation/#initializing-metrics-with-sdk-metrics
