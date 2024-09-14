@@ -1,0 +1,24 @@
+# MEMO: 以下のコマンドで検証できた。0.100.0くらいからバグか何かでうごかくなるので注意。
+#  gcloud auth login --update-adc
+#  docker run \
+#   --volume ~/.config/gcloud/application_default_credentials.json:/etc/otelcol-contrib/key.json \
+#   --volume $(pwd)/collector-config.yaml:/etc/otelcol-contrib/config.yaml \
+#   --env GOOGLE_APPLICATION_CREDENTIALS=/etc/otelcol-contrib/key.json \
+#   -p 127.0.0.1:4318:4318 \
+#   --rm \
+#   otel/opentelemetry-collector-contrib:0.95.0
+
+receivers:
+  otlp:
+    protocols:
+      http:
+
+exporters:
+  googlecloud:
+    project: test-github-actions-otel
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [googlecloud]
